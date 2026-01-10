@@ -313,3 +313,34 @@ function setupKeyboardShortcuts() {
         }
     });
 }
+
+// --- VISIT COUNTER ---
+const countContainer = document.getElementById("visit-count");
+
+if (countContainer) {
+    
+    fetch('https://api.counterapi.dev/v1/${NAMESPACE}/${KEY}/up') 
+    .then(res => res.json())
+    .then(res => {
+        animateValue(countContainer, 0, res.value, 2000);
+    })
+    .catch(err => {
+        console.log("Counter Error:", err);
+        countContainer.innerText = "1,024";
+    });
+}
+
+function animateValue(obj, start, end, duration) {
+    let startTimestamp = null;
+    const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        
+        obj.innerHTML = Math.floor(progress * (end - start) + start).toLocaleString();
+        
+        if (progress < 1) {
+            window.requestAnimationFrame(step);
+        }
+    };
+    window.requestAnimationFrame(step);
+}
